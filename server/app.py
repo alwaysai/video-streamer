@@ -4,10 +4,10 @@ from flask import Flask, render_template
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-@_app.route('/')
+@app.route('/')
 def index():
     """Home page."""
     return render_template('index.html')
 
-if __name == "__main__":
+if __name__ == "__main__":
     socketio.run(app=app)
