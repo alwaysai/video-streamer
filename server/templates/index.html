@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}">
+  <title>{{ hostname }}</title>
+
+  <!-- Socket IO
+  ================================================== -->
+  <script type="text/javascript"
+          src="{{ url_for('static', filename = 'socket.io.2.0.3.js') }}">
+  </script>
+
+  <!-- Bootstrap CSS
+  ================================================== -->
+  <script src="{{ url_for('static', filename = 'jquery-3.3.1.slim.min.js') }}"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+  </script>
+  <script src="{{ url_for('static', filename = 'popper-1.14.7.min.js') }}"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'bootstrap-4.3.1.min.css') }}"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="{{ url_for('static', filename = 'bootstrap-4.3.1.min.js') }}"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+  </script>
+  ================================================== -->
+  <link href="{{ url_for('static', filename = 'Karla.css') }}" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f1f2f3;
+    }
+
+    .container {
+      max-width: 1024px;
+    }
+
+    .navbar-light .navbar-nav .nav-link,
+    .navbar-light .navbar-nav .nav-link:hover {
+      font-family: Karla;
+      font-size: 14px;
+      color: #000000;
+    }
+
+    .navbar-brand img {
+      width: 120px
+    }
+
+    .dash-sub-title h1 {
+      font-size: 16px;
+      margin: 24px 0 8px 0;
+    }
+
+    .dash-sub-title h2 {
+      font-size: 14px;
+      margin: 8px 0 8px 0;
+    }
+
+    .card {
+      height: 480px;
+    }
+
+    .card-scroller {
+      overflow: scroll;
+      height: 420px;
+    }
+
+    .stop-button {
+      opacity: 1;
+      background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU3LjEgKDgzMDg4KSAtIGh0dHBzOi8vc2tldGNoLmNvbSAtLT4KICAgIDx0aXRsZT5Hcm91cEAxeDwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPgogICAgICAgIDxwb2x5Z29uIGlkPSJwYXRoLTEiIHBvaW50cz0iNS45OTk5OTk5OCA1Ljk5OTk5OTk3IDE4IDUuOTk5OTk5OTcgMTggMTggNS45OTk5OTk5OCAxOCI+PC9wb2x5Z29uPgogICAgPC9kZWZzPgogICAgPGcgaWQ9IlN0cmVhbWVyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0iU3RyZWFtZXItRmluYWwtQ29weS00IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNDE5LjAwMDAwMCwgLTE3OS4wMDAwMDApIj4KICAgICAgICAgICAgPGcgaWQ9Ikdyb3VwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0MTkuMDAwMDAwLCAxNzkuMDAwMDAwKSI+CiAgICAgICAgICAgICAgICA8cmVjdCBpZD0iUmVjdGFuZ2xlIiBmaWxsPSIjRkZGRkZGIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPjwvcmVjdD4KICAgICAgICAgICAgICAgIDxnIGlkPSJzdG9wIj4KICAgICAgICAgICAgICAgICAgICA8cG9seWdvbiBpZD0iQmFzZSIgcG9pbnRzPSItNS4wMDAwMDExMmUtMDggLTQuOTk5OTkyNmUtMDggMjQgLTQuOTk5OTkyNmUtMDggMjQgMjQuMDAwMDAwMSAtNS4wMDAwMDExMmUtMDggMjQuMDAwMDAwMSI+PC9wb2x5Z29uPgogICAgICAgICAgICAgICAgICAgIDxtYXNrIGlkPSJtYXNrLTIiIGZpbGw9IndoaXRlIj4KICAgICAgICAgICAgICAgICAgICAgICAgPHVzZSB4bGluazpocmVmPSIjcGF0aC0xIj48L3VzZT4KICAgICAgICAgICAgICAgICAgICA8L21hc2s+CiAgICAgICAgICAgICAgICAgICAgPGcgaWQ9Ikljb24iPjwvZz4KICAgICAgICAgICAgICAgICAgICA8cmVjdCBpZD0i4oazLfCfjqgtQ29sb3IiIGZpbGw9IiNGMjMwM0EiIGZpbGwtcnVsZT0iZXZlbm9kZCIgbWFzaz0idXJsKCNtYXNrLTIpIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPjwvcmVjdD4KICAgICAgICAgICAgICAgIDwvZz4KICAgICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+) no-repeat;
+      cursor: pointer;
+      border: none;
+      width: 24px;
+      height: 24px;
+      float: right;
+    }
+
+    .stop-button:hover {
+      opacity: 0.75;
+    }
+
+    h5 {
+      border-bottom: solid 1px #d2d2d2;
+    }
+
+    ::-webkit-scrollbar {
+      -webkit-appearance: none;
+      width: 7px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, .5);
+      -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    }
+
+    .alwaysai-logos-svg-horizontal-logo-red-black {
+      width: 121px;
+      height: 33px;
+      background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSI5MXB0IiBoZWlnaHQ9IjI1cHQiIHZpZXdCb3g9IjAgMCA5MSAyNSIgdmVyc2lvbj0iMS4xIj48ZyBpZD0ic3VyZmFjZTEiPjxwYXRoIHN0eWxlPSIgc3Ryb2tlOm5vbmU7ZmlsbC1ydWxlOmV2ZW5vZGQ7ZmlsbDpyZ2IoOTQuOTAxOTYxJSwxOC44MjM1MjklLDIyLjc0NTA5OCUpO2ZpbGwtb3BhY2l0eToxOyIgZD0iTSAyMC44MDQ2ODggMTIuNDYwOTM4IEwgMTQuMjMwNDY5IDAuOTY0ODQ0IEwgMS4xMTcxODggMjMuODgyODEyIEwgNi4zMDQ2ODggMjMuODgyODEyIEMgOS40NDE0MDYgMTguMjgxMjUgMTQuNjYwMTU2IDE0LjE3MTg3NSAyMC44MDQ2ODggMTIuNDYwOTM4IE0gOC4xNTYyNSAyMS44MjQyMTkgQyA5LjkzNzUgMjAuNTgyMDMxIDEyLjA2MjUgMTkuOTM3NSAxNC4yMzA0NjkgMTkuOTgwNDY5IEMgMTcuNDQ1MzEyIDE5Ljk4MDQ2OSAyMC42NjQwNjIgMjEuMjgxMjUgMjIuMTUyMzQ0IDIzLjg4MjgxMiBMIDI3LjMzOTg0NCAyMy44ODI4MTIgTCAyNS43ODEyNSAyMS4xNTYyNSBDIDIyLjQyNTc4MSAxNS4yOTI5NjkgMTQuMzAwNzgxIDE0LjcxNDg0NCA4LjE1NjI1IDIxLjgyNDIxOSBaIE0gOC4xNTYyNSAyMS44MjQyMTkgIi8+PHBhdGggc3R5bGU9IiBzdHJva2U6bm9uZTtmaWxsLXJ1bGU6bm9uemVybztmaWxsOnJnYigxMC45ODAzOTIlLDExLjc2NDcwNiUsMTIuOTQxMTc2JSk7ZmlsbC1vcGFjaXR5OjE7IiBkPSJNIDc1LjcxMDkzOCAxMC40MDYyNSBMIDc1LjA1ODU5NCAxMS4wODk4NDQgQyA3NC42NTIzNDQgMTAuNjIxMDk0IDc0LjA4MjAzMSAxMC4zMzU5MzggNzMuNDcyNjU2IDEwLjI4OTA2MiBDIDczLjE1NjI1IDEwLjI4NTE1NiA3Mi44NTU0NjkgMTAuNDAyMzQ0IDcyLjYyODkwNiAxMC42MTcxODggQyA3Mi40MDYyNSAxMC44MTI1IDcyLjI3NzM0NCAxMS4wOTM3NSA3Mi4yNzczNDQgMTEuMzg2NzE5IEMgNzIuMjgxMjUgMTEuNjYwMTU2IDcyLjM4NjcxOSAxMS45MjE4NzUgNzIuNTY2NDA2IDEyLjEyNSBDIDcyLjkxNzk2OSAxMi40ODA0NjkgNzMuMzI4MTI1IDEyLjc2NTYyNSA3My43ODEyNSAxMi45Njg3NSBDIDc0LjM3MTA5NCAxMy4yMzQzNzUgNzQuODk0NTMxIDEzLjYyMTA5NCA3NS4zMjAzMTIgMTQuMTA5Mzc1IEMgNzUuNTgyMDMxIDE0LjQ2ODc1IDc1LjcyMjY1NiAxNC45MTAxNTYgNzUuNzE4NzUgMTUuMzU5Mzc1IEMgNzUuNzMwNDY5IDE1Ljk4NDM3NSA3NS40ODQzNzUgMTYuNTg1OTM4IDc1LjAzNTE1NiAxNy4wMTk1MzEgQyA3NC41ODU5MzggMTcuNDY4NzUgNzMuOTY4NzUgMTcuNzE0ODQ0IDczLjMzNTkzOCAxNy42OTkyMTkgQyA3Mi44ODI4MTIgMTcuNjk5MjE5IDcyLjQzNzUgMTcuNTk3NjU2IDcyLjAzNTE1NiAxNy4zOTg0MzggQyA3MS42MzI4MTIgMTcuMjA3MDMxIDcxLjI4MTI1IDE2LjkyNTc4MSA3MS4wMDc4MTIgMTYuNTcwMzEyIEwgNzEuNjQ0NTMxIDE1LjgzOTg0NCBDIDcyLjAzOTA2MiAxNi4zNjMyODEgNzIuNjQwNjI1IDE2LjY4NzUgNzMuMjg5MDYyIDE2LjcyMjY1NiBDIDczLjY3MTg3NSAxNi43MzQzNzUgNzQuMDQ2ODc1IDE2LjU5Mzc1IDc0LjMyODEyNSAxNi4zMzIwMzEgQyA3NC41OTc2NTYgMTYuMDk3NjU2IDc0Ljc1MzkwNiAxNS43NTc4MTIgNzQuNzUzOTA2IDE1LjQwMjM0NCBDIDc0Ljc1NzgxMiAxNS4xMTcxODggNzQuNjU2MjUgMTQuODM1OTM4IDc0LjQ3MjY1NiAxNC42MjEwOTQgQyA3NC4wOTc2NTYgMTQuMjY1NjI1IDczLjY2Nzk2OSAxMy45ODA0NjkgNzMuMTk1MzEyIDEzLjc3MzQzOCBDIDcyLjYzNjcxOSAxMy41MTk1MzEgNzIuMTQ0NTMxIDEzLjE0NDUzMSA3MS43NDYwOTQgMTIuNjcxODc1IEMgNzEuNDkyMTg4IDEyLjMxMjUgNzEuMzU1NDY5IDExLjg3ODkwNiA3MS4zNjMyODEgMTEuNDM3NSBDIDcxLjM0NzY1NiAxMC44NzEwOTQgNzEuNTcwMzEyIDEwLjMyNDIxOSA3MS45NzI2NTYgOS45MzM1OTQgQyA3Mi4zOTA2MjUgOS41MzEyNSA3Mi45NDkyMTkgOS4zMTI1IDczLjUyMzQzOCA5LjMzMjAzMSBDIDc0LjM2MzI4MSA5LjM4NjcxOSA3NS4xNTIzNDQgOS43NzM0MzggNzUuNzEwOTM4IDEwLjQwNjI1IE0gNjIuOTQxNDA2IDkuNTM1MTU2IEwgNjQuMDE1NjI1IDkuNTM1MTU2IEwgNjYuNzI2NTYyIDE1LjY2Nzk2OSBMIDY5LjM1NTQ2OSA5LjUzNTE1NiBMIDcwLjQzMzU5NCA5LjUzNTE1NiBMIDY1LjczMDQ2OSAyMC40MDIzNDQgTCA2NC42NjAxNTYgMjAuNDAyMzQ0IEwgNjYuMTc5Njg4IDE2Ljg5NDUzMSBaIE0gNTcuNDQ1MzEyIDEwLjMyMDMxMiBDIDU2LjMyMDMxMiAxMC4zMDg1OTQgNTUuMjgxMjUgMTAuOTI1NzgxIDU0Ljc0MjE4OCAxMS45MjE4NzUgQyA1NC4xNzU3ODEgMTIuOTE3OTY5IDU0LjE3NTc4MSAxNC4xNDQ1MzEgNTQuNzQyMTg4IDE1LjE0MDYyNSBDIDU1LjAxNTYyNSAxNS42MzI4MTIgNTUuNDEwMTU2IDE2LjA0Njg3NSA1NS44OTQ1MzEgMTYuMzM1OTM4IEMgNTYuMzU5Mzc1IDE2LjYxNzE4OCA1Ni44OTQ1MzEgMTYuNzYxNzE5IDU3LjQ0MTQwNiAxNi43NjE3MTkgQyA1Ny45OTIxODggMTYuNzYxNzE5IDU4LjUzOTA2MiAxNi42MTcxODggNTkuMDE5NTMxIDE2LjMzNTkzOCBDIDU5LjUwMzkwNiAxNi4wNzAzMTIgNTkuODk4NDM4IDE1LjY3MTg3NSA2MC4xNjc5NjkgMTUuMTg3NSBDIDYwLjQ0MTQwNiAxNC42OTE0MDYgNjAuNTc4MTI1IDE0LjEyODkwNiA2MC41NzAzMTIgMTMuNTU4NTk0IEMgNjAuNTkzNzUgMTIuNjk1MzEyIDYwLjI2OTUzMSAxMS44NjMyODEgNTkuNjY3OTY5IDExLjI1IEMgNTkuMDg5ODQ0IDEwLjYzNjcxOSA1OC4yODUxNTYgMTAuMzAwNzgxIDU3LjQ0NTMxMiAxMC4zMjAzMTIgWiBNIDYxLjUwNzgxMiA5LjUzNTE1NiBMIDYxLjUwNzgxMiAxNy40OTIxODggTCA2MC41MDc4MTIgMTcuNDkyMTg4IEwgNjAuNTA3ODEyIDE2LjEyNSBDIDYwLjExNzE4OCAxNi42MTcxODggNTkuNjI4OTA2IDE3LjAxOTUzMSA1OS4wNzQyMTkgMTcuMzA0Njg4IEMgNTcuNTIzNDM4IDE4LjA1MDc4MSA1NS42NzU3ODEgMTcuNzE0ODQ0IDU0LjQ4MDQ2OSAxNi40NzI2NTYgQyA1My42OTkyMTkgMTUuNjgzNTk0IDUzLjI3MzQzOCAxNC42MDU0NjkgNTMuMjkyOTY5IDEzLjQ5MjE4OCBDIDUzLjI3NzM0NCAxMi4zODY3MTkgNTMuNzEwOTM4IDExLjMyODEyNSA1NC40OTIxODggMTAuNTU0Njg4IEMgNTUuMjM4MjgxIDkuNzYxNzE5IDU2LjI4MTI1IDkuMzE2NDA2IDU3LjM2NzE4OCA5LjMzMjAzMSBDIDU3Ljk3NjU2MiA5LjMyMDMxMiA1OC41ODIwMzEgOS40NjQ4NDQgNTkuMTI1IDkuNzQ2MDk0IEMgNTkuNjc1NzgxIDEwLjA1MDc4MSA2MC4xNDg0MzggMTAuNDgwNDY5IDYwLjUwNzgxMiAxMSBMIDYwLjUwNzgxMiA5LjUzNTE1NiBaIE0gNDAuMjUgOS41MzUxNTYgTCA0MS4yOTI5NjkgOS41MzUxNTYgTCA0My43MDcwMzEgMTUuMzEyNSBMIDQ2LjIzODI4MSA5LjUzNTE1NiBMIDQ2LjQxNzk2OSA5LjUzNTE1NiBMIDQ4Ljk0MTQwNiAxNS4zMTI1IEwgNTEuMzk0NTMxIDkuNTM1MTU2IEwgNTIuNDUzMTI1IDkuNTM1MTU2IEwgNDkuMDM1MTU2IDE3LjQ5MjE4OCBMIDQ4LjgzOTg0NCAxNy40OTIxODggTCA0Ni4zMzIwMzEgMTEuNzk2ODc1IEwgNDMuODAwNzgxIDE3LjQ5MjE4OCBMIDQzLjYxMzI4MSAxNy40OTIxODggWiBNIDM4LjE5NTMxMiA2LjQ2NDg0NCBMIDM5LjIxMDkzOCA2LjQ2NDg0NCBMIDM5LjIxMDkzOCAxNy40OTIxODggTCAzOC4xOTUzMTIgMTcuNDkyMTg4IFogTSAzMi4wMDM5MDYgMTAuMzIwMzEyIEMgMzAuODc4OTA2IDEwLjMwODU5NCAyOS44MzU5MzggMTAuOTI1NzgxIDI5LjI5Njg3NSAxMS45MjE4NzUgQyAyOC43MzA0NjkgMTIuOTE3OTY5IDI4LjczNDM3NSAxNC4xNDQ1MzEgMjkuMzAwNzgxIDE1LjE0MDYyNSBDIDI5LjU3MDMxMiAxNS42MzI4MTIgMjkuOTY4NzUgMTYuMDQ2ODc1IDMwLjQ0OTIxOSAxNi4zMzU5MzggQyAzMC45MTc5NjkgMTYuNjE3MTg4IDMxLjQ1MzEyNSAxNi43NjE3MTkgMzEuOTk2MDk0IDE2Ljc2MTcxOSBDIDMyLjU1MDc4MSAxNi43NjE3MTkgMzMuMDkzNzUgMTYuNjE3MTg4IDMzLjU3ODEyNSAxNi4zMzU5MzggQyAzNC4wNTg1OTQgMTYuMDcwMzEyIDM0LjQ1NzAzMSAxNS42NzE4NzUgMzQuNzIyNjU2IDE1LjE4NzUgQyAzNC45OTYwOTQgMTQuNjkxNDA2IDM1LjEzNjcxOSAxNC4xMjg5MDYgMzUuMTI4OTA2IDEzLjU1ODU5NCBDIDM1LjE0ODQzOCAxMi42OTUzMTIgMzQuODI0MjE5IDExLjg2MzI4MSAzNC4yMjY1NjIgMTEuMjQ2MDk0IEMgMzMuNjQ0NTMxIDEwLjYzNjcxOSAzMi44Mzk4NDQgMTAuMzAwNzgxIDMyLjAwMzkwNiAxMC4zMjAzMTIgWiBNIDM2LjA2MjUgOS41MzUxNTYgTCAzNi4wNjI1IDE3LjQ5MjE4OCBMIDM1LjA2MjUgMTcuNDkyMTg4IEwgMzUuMDYyNSAxNi4xMjUgQyAzNC42NzU3ODEgMTYuNjE3MTg4IDM0LjE4NzUgMTcuMDE5NTMxIDMzLjYzMjgxMiAxNy4zMDQ2ODggQyAzMi4wODIwMzEgMTguMDUwNzgxIDMwLjIzMDQ2OSAxNy43MTQ4NDQgMjkuMDM1MTU2IDE2LjQ3MjY1NiBDIDI4LjI1NzgxMiAxNS42ODM1OTQgMjcuODI4MTI1IDE0LjYwNTQ2OSAyNy44NTE1NjIgMTMuNDkyMTg4IEMgMjcuODM1OTM4IDEyLjM4NjcxOSAyOC4yNjU2MjUgMTEuMzI4MTI1IDI5LjA0Njg3NSAxMC41NTQ2ODggQyAyOS43OTY4NzUgOS43NjE3MTkgMzAuODM5ODQ0IDkuMzE2NDA2IDMxLjkyNTc4MSA5LjMzMjAzMSBDIDMyLjUzNTE1NiA5LjMyMDMxMiAzMy4xMzY3MTkgOS40NjQ4NDQgMzMuNjc5Njg4IDkuNzQ2MDk0IEMgMzQuMjMwNDY5IDEwLjA1MDc4MSAzNC43MDMxMjUgMTAuNDgwNDY5IDM1LjA2MjUgMTEgTCAzNS4wNjI1IDkuNTM1MTU2IFogTSAzNi4wNjI1IDkuNTM1MTU2ICIvPjxwYXRoIHN0eWxlPSIgc3Ryb2tlOm5vbmU7ZmlsbC1ydWxlOmV2ZW5vZGQ7ZmlsbDpyZ2IoOTQuOTAxOTYxJSwxOC44MjM1MjklLDIyLjc0NTA5OCUpO2ZpbGwtb3BhY2l0eToxOyIgZD0iTSA4My4zMzIwMzEgMTIuNTI3MzQ0IEwgODEuOTU3MDMxIDkuNTcwMzEyIEwgODAuNTY2NDA2IDEyLjUyNzM0NCBaIE0gODQuMDI3MzQ0IDE0LjA0Mjk2OSBMIDc5Ljg2MzI4MSAxNC4wNDI5NjkgTCA3OC4yMzgyODEgMTcuNDkyMTg4IEwgNzYuNTMxMjUgMTcuNDkyMTg4IEwgODEuNjc1NzgxIDYuNTAzOTA2IEwgODIuMjQ2MDk0IDYuNTAzOTA2IEwgODcuMzI0MjE5IDE3LjQ5MjE4OCBMIDg1LjY2MDE1NiAxNy40OTIxODggWiBNIDg0LjAyNzM0NCAxNC4wNDI5NjkgIi8+PHBhdGggc3R5bGU9IiBzdHJva2U6bm9uZTtmaWxsLXJ1bGU6bm9uemVybztmaWxsOnJnYig5NC45MDE5NjElLDE4LjgyMzUyOSUsMjIuNzQ1MDk4JSk7ZmlsbC1vcGFjaXR5OjE7IiBkPSJNIDg4LjE0NDUzMSA2LjUwMzkwNiBMIDg5LjY4MzU5NCA2LjUwMzkwNiBMIDg5LjY4MzU5NCAxNy40OTIxODggTCA4OC4xNDQ1MzEgMTcuNDkyMTg4IFogTSA4OC4xNDQ1MzEgNi41MDM5MDYgIi8+PC9nPjwvc3ZnPg==);
+}
+  </style>
+</head>
+
+<body class="tos-bg">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="http://alwaysai.co/" target="_blank"><div class="alwaysai-logos-svg-horizontal-logo-red-black"></div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+      aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <span class="navbar-nav mr-auto"></span>
+
+      <ul class="navbar-nav ">
+
+        <li class="nav-item">
+          <a class="nav-link" href="https://dashboard.alwaysai.co/docs/introduction/welcome.html" target="_blank">Documentation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://alwaysaicommunity.slack.com/" target="_blank">Support</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" min-width= "1024px" width="100%">
+
+    <div class="dash-sub-title">
+      <h1><b>Hostname:</b> {{ hostname }}</h1>
+      <h2><b>edgeIQ:</b> {{ version }}</h2>
+      <h2 id="app-status"><b>Status:</b> Loading</h2>
+    </div>
+
+    <div class="card-deck">
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Output<div class="stop-button" id="stop-app" value=""></div></h5>
+          <div class="card-scroller">
+            <p id="streamer-text"></p>
+          </div>
+        </div>
+      </div>
+
+      <div style="width: 70%">
+        <img id="streamer-image" src="">
+      </div>
+
+    </div>
+
+</div>
+</body>
+</html>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    const image_elem = document.getElementById("streamer-image");
+    const text_elem = document.getElementById("streamer-text");
+    const status_elem = document.getElementById("app-status");
+    const stop_elem = document.getElementById("stop-app");
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port, {
+      reconnection: false
+    });
+    console.log('Connected');
+    var running = true;
+
+    // Update image and text data based on incoming data messages
+    socket.on('streamer-data', (msg) => {
+      if (running) {
+        image_elem.src = msg.image;
+        text_elem.innerHTML = msg.text;
+        status_elem.innerHTML = "<b>Status:</b> Running";
+      }
+    });
+
+    // Send message to stop app when stop button is pressed
+    stop_elem.addEventListener("click", function() {
+      if (running) {
+        running = false;
+        socket.emit('streamer-user', 'stop');
+        console.log('Sent stop msg');
+        status_elem.innerHTML = "<b>Status:</b> Stopped";
+        stop_elem.style.opacity = 0.5;
+      }
+    });
+  });
+</script>
