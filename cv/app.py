@@ -15,18 +15,33 @@ To change the engine and accelerator, follow this guide:
 https://dashboard.alwaysai.co/docs/application_development/changing_the_engine_and_accelerator.html
 """
 
+sio = socketio.Client()
+
+
+@sio.event
+def connect():
+    print('[INFO] Successfully connected to server.')
+
+
+@sio.event
+def connect_error():
+    print('[INFO] Failed to connect to server.')
+
+
+@sio.event
+def disconnect():
+    print('[INFO] Disconnected from server.')
+
 
 class CVClient(object):
     def __init__(self, server_addr):
         self.server_addr = server_addr
-        self._sio = socketio.Client()
 
     def setup(self):
         print('[INFO] Connecting to server...')
-        self._sio.connect(
+        sio.connect(
                 'http://{}:5000'.format(self.server_addr),
                 namespaces=['/data'])
-        print('[INFO] Successfully connected to server.')
         time.sleep(1)
         return self
 
@@ -39,22 +54,20 @@ class CVClient(object):
         return "data:image/jpeg;base64,{}".format(frame)
 
     def send_data(self, frame, text):
-        #frame = edgeiq.resize(
-        #        frame, width=self._max_image_width,
-        #        height=self._max_image_height, keep_scale=True)
-        #self._sio.emit(
-        #        'cv-data',
-        #        {
-        #            'data': self._convert_image_to_jpeg(frame),
-        #            'text': text
-        #        })
-        pass
+        frame = edgeiq.resize(
+                frame, width=640, height=480, keep_scale=True)
+        sio.emit(
+                'cv-data',
+                {
+                    'data': self._convert_image_to_jpeg(frame),
+                    'text': '<br />'.join(text)
+                })
 
     def check_exit(self):
         pass
 
     def close(self):
-        self._sio.disconnect()
+        sio.disconnect()
 
 
 def main(use_streamer, server_addr):
@@ -70,6 +83,7 @@ def main(use_streamer, server_addr):
     fps = edgeiq.FPS()
 
     try:
+        streamer = None
         if use_streamer:
             streamer = edgeiq.Streamer().setup()
         else:
@@ -105,7 +119,8 @@ def main(use_streamer, server_addr):
                     break
 
     finally:
-        streamer.close()
+        if streamer is not None:
+            streamer.close()
         fps.stop()
         print("elapsed time: {:.2f}".format(fps.get_elapsed_seconds()))
         print("approx. FPS: {:.2f}".format(fps.compute_fps()))
