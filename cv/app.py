@@ -2,6 +2,8 @@ import time
 import edgeiq
 import argparse
 import socketio
+import cv2
+import base64
 """
 Use object detection to detect objects in the frame in realtime. The
 types of objects detected can be changed by selecting different models.
@@ -22,13 +24,33 @@ class CVClient(object):
     def setup(self):
         print('[INFO] Connecting to server...')
         self._sio.connect(
-                'http://{}:5000'.format(self.server_addr), namespaces=['/data'])
+                'http://{}:5000'.format(self.server_addr),
+                namespaces=['/data'])
         print('[INFO] Successfully connected to server.')
         time.sleep(1)
         return self
 
+    def _convert_image_to_jpeg(self, image):
+        # Encode frame as jpeg
+        frame = cv2.imencode('.jpg', image)[1].tobytes()
+        # Encode frame in base64 representation and remove
+        # utf-8 encoding
+        frame = base64.b64encode(frame).decode('utf-8')
+        return "data:image/jpeg;base64,{}".format(frame)
+
     def send_data(self, frame, text):
-        # Process and send frame to web client
+        #frame = edgeiq.resize(
+        #        frame, width=self._max_image_width,
+        #        height=self._max_image_height, keep_scale=True)
+        #self._sio.emit(
+        #        'cv-data',
+        #        {
+        #            'data': self._convert_image_to_jpeg(frame),
+        #            'text': text
+        #        })
+        pass
+
+    def check_exit(self):
         pass
 
     def close(self):
@@ -97,7 +119,7 @@ if __name__ == "__main__":
             '--use-streamer',  action='store_true',
             help='Use the streamer instead of connecting to the server.')
     parser.add_argument(
-            '--server_addr',  type=str, default='localhost',
+            '--server-addr',  type=str, default='localhost',
             help='The IP address or hostname of the SocketIO server.')
     args = parser.parse_args()
-    main(args.use_streamer)
+    main(args.use_streamer, args.server_addr)
