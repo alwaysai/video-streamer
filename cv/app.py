@@ -40,8 +40,7 @@ class CVClient(object):
     def setup(self):
         print('[INFO] Connecting to server...')
         sio.connect(
-                'http://{}:5000'.format(self.server_addr),
-                namespaces=['/data'])
+                'http://{}:5000'.format(self.server_addr))
         time.sleep(1)
         return self
 
@@ -62,6 +61,7 @@ class CVClient(object):
                     'data': self._convert_image_to_jpeg(frame),
                     'text': '<br />'.join(text)
                 })
+        print("Sent data")
 
     def check_exit(self):
         pass

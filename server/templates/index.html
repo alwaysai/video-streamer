@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}">
-  <title>alwaysAI Video Stream</title>
+  <title>alwaysAI Video Streamer</title>
 
   <!-- Socket IO
   ================================================== -->
@@ -122,10 +122,10 @@
       <ul class="navbar-nav ">
 
         <li class="nav-item">
-          <a class="nav-link" href="https://dashboard.alwaysai.co/docs/introduction/welcome.html" target="_blank">Documentation</a>
+          <a class="nav-link" href="https://alwaysai.co/docs" target="_blank">Documentation</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://alwaysaicommunity.slack.com/" target="_blank">Support</a>
+          <a class="nav-link" href="https://alwaysai.co/support" target="_blank">Support</a>
         </li>
       </ul>
     </div>
@@ -133,16 +133,14 @@
   <div class="container" min-width= "1024px" width="100%">
 
     <div class="dash-sub-title">
-      <h1><b>Hostname:</b> {{ hostname }}</h1>
-      <h2><b>edgeIQ:</b> {{ version }}</h2>
-      <h2 id="app-status"><b>Status:</b> Loading</h2>
+      <h1>alwaysAI Video Streamer</h1>
     </div>
 
     <div class="card-deck">
 
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Output<div class="stop-button" id="stop-app" value=""></div></h5>
+          <h5 class="card-title">Output</h5>
           <div class="card-scroller">
             <p id="streamer-text"></p>
           </div>
@@ -163,33 +161,36 @@
   document.addEventListener("DOMContentLoaded", function(event) {
     const image_elem = document.getElementById("streamer-image");
     const text_elem = document.getElementById("streamer-text");
-    const status_elem = document.getElementById("app-status");
-    const stop_elem = document.getElementById("stop-app");
 
     var socket = io.connect('http://' + document.domain + ':' + location.port, {
       reconnection: false
     });
-    console.log('Connected');
-    var running = true;
 
-    // Update image and text data based on incoming data messages
-    socket.on('streamer-data', (msg) => {
-      if (running) {
-        image_elem.src = msg.image;
-        text_elem.innerHTML = msg.text;
-        status_elem.innerHTML = "<b>Status:</b> Running";
-      }
+    socket.on('connect', () => {
+      console.log('Connected');
     });
 
-    // Send message to stop app when stop button is pressed
-    stop_elem.addEventListener("click", function() {
-      if (running) {
-        running = false;
-        socket.emit('streamer-user', 'stop');
-        console.log('Sent stop msg');
-        status_elem.innerHTML = "<b>Status:</b> Stopped";
-        stop_elem.style.opacity = 0.5;
-      }
+    socket.on('disconnect', () => {
+      console.log('Disconnected');
+    });
+
+    socket.on('connect_error', (error) => {
+      console.log('Connect error! ' + error);
+    });
+
+    socket.on('connect_timeout', (error) => {
+      console.log('Connect timeout! ' + error);
+    });
+
+    socket.on('error', (error) => {
+      console.log('Error! ' + error);
+    });
+
+    // Update image and text data based on incoming data messages
+    socket.on('cv-data', (msg) => {
+      console.log('Rx pkt')
+      image_elem.src = msg.image;
+      text_elem.innerHTML = msg.text;
     });
   });
 </script>
