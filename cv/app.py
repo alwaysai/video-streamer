@@ -70,7 +70,7 @@ class CVClient(object):
         sio.disconnect()
 
 
-def main(use_streamer, server_addr):
+def main(camera, use_streamer, server_addr):
     obj_detect = edgeiq.ObjectDetection(
             "alwaysai/mobilenet_ssd")
     obj_detect.load(engine=edgeiq.Engine.DNN)
@@ -89,7 +89,7 @@ def main(use_streamer, server_addr):
         else:
             streamer = CVClient(server_addr).setup()
 
-        with edgeiq.WebcamVideoStream(cam=0) as video_stream:
+        with edgeiq.WebcamVideoStream(cam=camera) as video_stream:
             # Allow Webcam to warm up
             time.sleep(2.0)
             fps.start()
@@ -131,10 +131,13 @@ def main(use_streamer, server_addr):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Realtime Object Detector')
     parser.add_argument(
+            '--camera', type=int, default='0',
+            help='The camera index to stream from.')
+    parser.add_argument(
             '--use-streamer',  action='store_true',
             help='Use the streamer instead of connecting to the server.')
     parser.add_argument(
             '--server-addr',  type=str, default='localhost',
             help='The IP address or hostname of the SocketIO server.')
     args = parser.parse_args()
-    main(args.use_streamer, args.server_addr)
+    main(args.camera, args.use_streamer, args.server_addr)

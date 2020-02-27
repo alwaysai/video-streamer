@@ -17,5 +17,12 @@ def connect():
 def disconnect():
     print('[INFO] Client disconnected: {}'.format(request.sid))
 
+
+@socketio.on('cv-data')
+def handle_message(message):
+    print('[INFO] Rx message')
+    socketio.emit('cv-data', message)
+
 if __name__ == "__main__":
+    print('[INFO] Starting server at http://localhost:5000')
     socketio.run(app=app)
