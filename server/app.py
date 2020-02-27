@@ -20,7 +20,6 @@ def disconnect():
 
 @socketio.on('cv-data')
 def handle_message(message):
-    print('[INFO] Rx message')
     socketio.emit('cv-data', message)
 
 if __name__ == "__main__":

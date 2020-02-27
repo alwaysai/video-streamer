@@ -58,10 +58,9 @@ class CVClient(object):
         sio.emit(
                 'cv-data',
                 {
-                    'data': self._convert_image_to_jpeg(frame),
+                    'image': self._convert_image_to_jpeg(frame),
                     'text': '<br />'.join(text)
                 })
-        print("Sent data")
 
     def check_exit(self):
         pass
