@@ -53,6 +53,7 @@
 
     .dash-sub-title h1 {
       font-size: 16px;
+      font-weight: bold;
       margin: 24px 0 8px 0;
     }
 
@@ -188,7 +189,6 @@
 
     // Update image and text data based on incoming data messages
     socket.on('cv-data', (msg) => {
-      console.log('Rx pkt')
       image_elem.src = msg.image;
       text_elem.innerHTML = msg.text;
     });
