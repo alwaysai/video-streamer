@@ -36,11 +36,13 @@ def disconnect():
 class CVClient(object):
     def __init__(self, server_addr):
         self.server_addr = server_addr
+        self.server_port = 5001
 
     def setup(self):
-        print('[INFO] Connecting to server...')
+        print('[INFO] Connecting to server http://{}:{}...'.format(
+            self.server_addr, self.server_port))
         sio.connect(
-                'http://{}:5000'.format(self.server_addr))
+                'http://{}:{}'.format(self.server_addr, self.server_port))
         time.sleep(1)
         return self
 
