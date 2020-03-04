@@ -43,6 +43,7 @@ class CVClient(object):
             self.server_addr, self.server_port))
         sio.connect(
                 'http://{}:{}'.format(self.server_addr, self.server_port),
+                transports=['websocket'],
                 namespaces=['/cv'])
         time.sleep(1)
         return self
