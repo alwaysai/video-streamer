@@ -163,7 +163,7 @@
     const image_elem = document.getElementById("streamer-image");
     const text_elem = document.getElementById("streamer-text");
 
-    var socket = io.connect('http://' + document.domain + ':' + location.port, {
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/web', {
       reconnection: false
     });
 
@@ -188,7 +188,7 @@
     });
 
     // Update image and text data based on incoming data messages
-    socket.on('cv-data', (msg) => {
+    socket.on('server2web', (msg) => {
       image_elem.src = msg.image;
       text_elem.innerHTML = msg.text;
     });

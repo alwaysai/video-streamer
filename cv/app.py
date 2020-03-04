@@ -15,7 +15,7 @@ To change the engine and accelerator, follow this guide:
 https://dashboard.alwaysai.co/docs/application_development/changing_the_engine_and_accelerator.html
 """
 
-sio = socketio.Client()
+sio = socketio.Client(logger=True, engineio_logger=True)
 
 
 @sio.event
@@ -42,7 +42,8 @@ class CVClient(object):
         print('[INFO] Connecting to server http://{}:{}...'.format(
             self.server_addr, self.server_port))
         sio.connect(
-                'http://{}:{}'.format(self.server_addr, self.server_port))
+                'http://{}:{}'.format(self.server_addr, self.server_port),
+                namespaces=['/cv'])
         time.sleep(1)
         return self
 
@@ -58,7 +59,7 @@ class CVClient(object):
         frame = edgeiq.resize(
                 frame, width=640, height=480, keep_scale=True)
         sio.emit(
-                'cv-data',
+                'cv2server',
                 {
                     'image': self._convert_image_to_jpeg(frame),
                     'text': '<br />'.join(text)
