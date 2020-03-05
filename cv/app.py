@@ -132,13 +132,13 @@ def main(camera, use_streamer, server_addr):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Realtime Object Detector')
+    parser = argparse.ArgumentParser(description='alwaysAI Video Streamer')
     parser.add_argument(
             '--camera', type=int, default='0',
             help='The camera index to stream from.')
     parser.add_argument(
             '--use-streamer',  action='store_true',
-            help='Use the streamer instead of connecting to the server.')
+            help='Use the embedded streamer instead of connecting to the server.')
     parser.add_argument(
             '--server-addr',  type=str, default='localhost',
             help='The IP address or hostname of the SocketIO server.')
