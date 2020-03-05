@@ -34,9 +34,12 @@ def disconnect():
 
 
 class CVClient(object):
-    def __init__(self, server_addr):
+    def __init__(self, server_addr, stream_fps):
         self.server_addr = server_addr
         self.server_port = 5001
+        self._stream_fps = stream_fps
+        self._last_update_t = time.time()
+        self._wait_t = (1/self._stream_fps)
 
     def setup(self):
         print('[INFO] Connecting to server http://{}:{}...'.format(
@@ -57,14 +60,17 @@ class CVClient(object):
         return "data:image/jpeg;base64,{}".format(frame)
 
     def send_data(self, frame, text):
-        frame = edgeiq.resize(
-                frame, width=640, height=480, keep_scale=True)
-        sio.emit(
-                'cv2server',
-                {
-                    'image': self._convert_image_to_jpeg(frame),
-                    'text': '<br />'.join(text)
-                })
+        cur_t = time.time()
+        if cur_t - self._last_update_t > self._wait_t:
+            self._last_update_t = cur_t
+            frame = edgeiq.resize(
+                    frame, width=640, height=480, keep_scale=True)
+            sio.emit(
+                    'cv2server',
+                    {
+                        'image': self._convert_image_to_jpeg(frame),
+                        'text': '<br />'.join(text)
+                    })
 
     def check_exit(self):
         pass
@@ -73,7 +79,7 @@ class CVClient(object):
         sio.disconnect()
 
 
-def main(camera, use_streamer, server_addr):
+def main(camera, use_streamer, server_addr, stream_fps):
     obj_detect = edgeiq.ObjectDetection(
             "alwaysai/mobilenet_ssd")
     obj_detect.load(engine=edgeiq.Engine.DNN)
@@ -90,7 +96,7 @@ def main(camera, use_streamer, server_addr):
         if use_streamer:
             streamer = edgeiq.Streamer().setup()
         else:
-            streamer = CVClient(server_addr).setup()
+            streamer = CVClient(server_addr, stream_fps).setup()
 
         with edgeiq.WebcamVideoStream(cam=camera) as video_stream:
             # Allow Webcam to warm up
@@ -142,5 +148,8 @@ if __name__ == "__main__":
     parser.add_argument(
             '--server-addr',  type=str, default='localhost',
             help='The IP address or hostname of the SocketIO server.')
+    parser.add_argument(
+            '--stream-fps',  type=float, default=20.0,
+            help='The rate to send frames to the server.')
     args = parser.parse_args()
-    main(args.camera, args.use_streamer, args.server_addr)
+    main(args.camera, args.use_streamer, args.server_addr, args.stream_fps)
