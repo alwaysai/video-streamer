@@ -15,7 +15,7 @@ To change the engine and accelerator, follow this guide:
 https://dashboard.alwaysai.co/docs/application_development/changing_the_engine_and_accelerator.html
 """
 
-sio = socketio.Client(logger=True, engineio_logger=True)
+sio = socketio.Client()
 
 
 @sio.event
