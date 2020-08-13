@@ -2,9 +2,9 @@
 This alwaysAI app performs realtime object detection and streams video and text data to a Flask-SocketIO server that can be located on another device.
 
 ## Setup
-This app requires access to alwaysAI's Beta program. To sign up go to the [Sign up page](https://www.alwaysai.co/dashboard).
+This app requires an alwaysAI account. Head to the [Sign up page](https://www.alwaysai.co/dashboard) if you don't have an account yet. Follow the instructions to install the alwaysAI toolchain on your development machine.
 
-Follow the setup instructions located on the [Docs page](https://www.alwaysai.co/docs/getting_started/introduction.html).
+Next, create an empty project to be used with this app. When you clone this repo, you can run `aai app configure` within the repo directory and your new project will appear in the list.
 
 ## Usage
 ### Server
