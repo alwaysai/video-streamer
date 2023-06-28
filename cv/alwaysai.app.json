@@ -3,6 +3,6 @@
     "start": "python app.py"
   },
   "models": {
-    "alwaysai/mobilenet_ssd": 4
+    "alwaysai/mobilenet_ssd": 5
   }
 }
